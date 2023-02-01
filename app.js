@@ -13,6 +13,8 @@ app
 /* RUTAS */
 app
 .use('/api/auth',require('./routes/auth'))
+.use('/api/users',require('./routes/users'))
+.use('/api/projects',require('./routes/projects'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
