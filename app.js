@@ -2,19 +2,36 @@ require('dotenv').config();
 const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
+const connectDB = require('./database/config');
 
 const app = express();
+const cors = require('cors');
+const whiteList = [process.env.URL_FRONTEND];
+const corsOptions = {
+  origin : function (origin, cb) {
+    if(whiteList.includes(origin)){
+      cb(null, true)
+    }else{
+      cb(new Error('Error de Cors'))
+    }
+  }
+}
+
+connectDB();
 
 app
-.use(logger('dev'))
-.use(express.json())
-.use(express.urlencoded({ extended: false }))
+  .use(logger('dev'))
+  .use(express.json())
+  .use(express.urlencoded({ extended: false }))
+  .use(cors(corsOptions))
 
-/* RUTAS */
+  /* RUTAS */
 app
-.use('/api/auth',require('./routes/auth'))
-.use('/api/users',require('./routes/users'))
-.use('/api/projects',require('./routes/projects'))
+  .use('/api/auth',require('./routes/auth'))
+  .use('/api/users',require('./routes/users'))
+  .use('/api/projects',require('./routes/projects'))
+  .use('/api/tasks',require('./routes/tasks'))
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -30,8 +47,8 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500).json({
     ok : false,
-    msg : err.message ? err.message : 'Upss, se ha detectado un error' 
-  }) ;
+    msg : err.message ? err.message : 'Upss, hubo un error!'
+  })
 });
 
 module.exports = app;
